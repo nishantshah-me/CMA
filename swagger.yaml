@@ -1,24 +1,19 @@
-swagger: '2.0'
+openapi: 3.0.0
 info:
-  description: 'This is rest api document for CMA project.'
+  description: This is rest api document for CMA project.
   version: 1.0.0
   title: CMA api docs
-  termsOfService: 'http://swagger.io/terms/'
+  termsOfService: http://swagger.io/terms/
   contact:
     email: xxx@xxx.com
   license:
     name: Apache 2.0
-    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
-host: localhost
-basePath: /v1
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
 tags:
   - name: Push
     description: Operations about push notification
   - name: Insurance
     description: Operations about insurance complaint
-schemes:
-  - https
-  - http
 paths:
   /push:
     post:
@@ -27,63 +22,67 @@ paths:
       summary: Add user's push token
       description: This can only be done by the logged in user.
       operationId: createUser
-      produces:
-        - application/json
-      parameters:
-        - in: body
-          name: push
-          description: Created user object
-          required: true
-          schema:
-            $ref: '#/definitions/Push'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Push"
+        description: Created user object
+        required: true
       responses:
-        '201':
+        "201":
           description: successful operation
           headers:
             X-Rate-Limit:
-              type: integer
-              format: int32
               description: calls per hour allowed by the user
-        '401':
+              schema:
+                type: integer
+                format: int32
+        "401":
           description: unauthorized
-          schema:
-            $ref: '#/definitions/ErrorResponse'
           headers:
             X-Rate-Limit:
-              type: integer
-              format: int32
               description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
       security:
-       - jwt: []
-  /push/{push_token}:
+        - jwt: []
+  "/push/{push_token}":
     delete:
       tags:
         - Push
       summary: Logs user into the system
-      description: ''
+      description: ""
       operationId: deleteToken
-      produces:
-        - application/json
       parameters:
         - name: push_token
           in: path
           description: The token for server to send the payload
           required: true
-          type: string
-      responses:
-        '204':
-          description: Deleted successfully
           schema:
             type: string
+      responses:
+        "204":
+          description: Deleted successfully
           headers:
             X-Rate-Limit:
-              type: integer
-              format: int32
               description: calls per hour allowed by the user
-        '404':
+              schema:
+                type: integer
+                format: int32
+          content:
+            application/json:
+              schema:
+                type: string
+        "404":
           description: Token not found
       security:
-       - jwt: []
+        - jwt: []
   /insurance/complaint:
     post:
       tags:
@@ -91,174 +90,180 @@ paths:
       summary: Add user's insurance complaint
       description: This can only be done by the logged in user.
       operationId: createInsuranceComplaint
-      consumes:
-      - "multipart/form-data"
-      produces:
-        - application/json
-      parameters:
-        - in: body
-          name: complaint
-          description: Created insurance complaint object
-          required: true
-          schema:
-            $ref: '#/definitions/Insurance_Complaint'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Insurance_Complaint"
+        description: Created insurance complaint object
+        required: true
       responses:
-        '201':
+        "201":
           description: successful operation
           headers:
             X-Rate-Limit:
-              type: integer
-              format: int32
               description: calls per hour allowed by the user
-        '401':
+              schema:
+                type: integer
+                format: int32
+        "401":
           description: unauthorized
-          schema:
-            $ref: '#/definitions/ErrorResponse'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
       security:
-       - jwt: []
-  /insurance/complaint/{complaint_id}:
+        - jwt: []
+  "/insurance/complaint/{complaint_id}":
     get:
       tags:
         - Insurance
       summary: See the status of insurance complaint
       description: This can only be done by the tokened in user.
       operationId: statusInsuranceComplaint
-      produces:
-        - application/json
       parameters:
         - in: path
-          type : string
           name: complaint_id
           description: Created user object
           required: true
-      responses:
-        '200':
-          description: successful operation
           schema:
-            $ref: '#/definitions/Insurance_Complaint'
+            type: string
+      responses:
+        "200":
+          description: successful operation
           headers:
             X-Rate-Limit:
-              type: integer
-              format: int32
               description: calls per hour allowed by the user
-        '401':
+              schema:
+                type: integer
+                format: int32
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Insurance_Complaint"
+        "401":
           description: unauthorized
-          schema:
-            $ref: '#/definitions/ErrorResponse'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
       security:
-       - jwt: []
-securityDefinitions:
-  jwt:
-    type: apiKey
-    name: jwt_token
-    in: header
-
-
-definitions:
-  Insurance_Complaint:
-    type: object
-    required: 
-      - insurance_company
-      - user
-    properties:
-      insurance_company:
-        $ref: '#/definitions/Insurance_Company'
-      claim_number:
-        type: string
-      policy_number:
-        type: string
-      insurance_type:
-        type: string
-        enum:
-          - "Car Insurance"
-          - "Health Insurance"
-          - "Life Insurance"
-          - "Travel Insurance"
-          - "Property Insurance"
-      insurance_complaint_type:
-        type: string
-      status:
-        type: string
-        enum:
-          - "deleted"
-          - "approved"
-          - "rejected"
-          - "incomplete"
-          - "processing"  
-      details:
-        type: string
-      user:
-         $ref: '#/definitions/User'
-  User:
-    type: object
-    required:
-      - id
-      - mobile
-      - email
-      - id_card_copy
-      - nationality
-      - name
-    properties:
-      id:
-        type: string
-      picture:
-        type: string
-        format: binary
-      name:
-        type: string
-      email:
-        type: string
-        format: email
-      nationality:
-        type: string
-      mobile:
-        type: string
-        format: phone
-      id_card_copy:
-        type: string
-        format: binary
-        
-  Insurance_Company:
-    type: object
-    properties:
-      company_name:
-        type: string
-      
-  Push:
-    type: object
-    properties:
-      push_token:
-        type: string
-      os:
-        type: string
-        enum: 
-          - "android"
-          - "iOS"
-      device_info:
-        type: string
-  File:
-    type: object
-    properties:
-      file_name:
-        type: string
-      date:
-        type: string
-        format: binary
-    
-  ErrorResponse:
-    type: object
-    properties:
-      code:
-        type: integer
-        format: int32
-      exception:
-        type: string
-      message:
-        type: string
-      host:
-        type: string
-      endpoint:
-        type: string
+        - jwt: []
 externalDocs:
   description: Find out more about CMA
-  url: 'https://www.cma.gov.om/'
+  url: https://www.cma.gov.om/
+servers:
+  - url: https://localhost/v1
+  - url: http://localhost/v1
+components:
+  securitySchemes:
+    jwt:
+      type: apiKey
+      name: jwt_token
+      in: header
+  schemas:
+    Insurance_Complaint:
+      type: object
+      required:
+        - insurance_company
+        - user
+      properties:
+        insurance_company:
+          $ref: "#/components/schemas/Insurance_Company"
+        claim_number:
+          type: string
+        policy_number:
+          type: string
+        insurance_type:
+          type: string
+          enum:
+            - Car Insurance
+            - Health Insurance
+            - Life Insurance
+            - Travel Insurance
+            - Property Insurance
+        insurance_complaint_type:
+          type: string
+        status:
+          type: string
+          enum:
+            - deleted
+            - approved
+            - rejected
+            - incomplete
+            - processing
+        details:
+          type: string
+        documents:
+          type: array
+          items:
+            type: string
+            format: binary
+            description: File
+        user:
+          $ref: "#/components/schemas/User"
+    User:
+      type: object
+      required:
+        - id
+        - mobile
+        - email
+        - id_card_copy
+        - nationality
+        - name
+      properties:
+        id:
+          type: string
+        picture:
+          type: string
+          format: binary
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        nationality:
+          type: string
+        mobile:
+          type: string
+          format: phone
+        id_card_copy:
+          type: string
+          format: binary
+    Insurance_Company:
+      type: object
+      properties:
+        company_name:
+          type: string
+        company_id:
+          type: string
+    Push:
+      type: object
+      properties:
+        mobile:
+          type: string
+          format: phone
+        push_token:
+          type: string
+        os:
+          type: string
+          enum:
+            - android
+            - iOS
+        device_info:
+          type: string
+   
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        exception:
+          type: string
+        message:
+          type: string
+        host:
+          type: string
+        endpoint:
+          type: string
