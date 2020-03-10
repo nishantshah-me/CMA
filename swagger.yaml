@@ -19,15 +19,15 @@ tags:
     description: Operations about news and events 
   - name: Hall
     description: Operations about hall service.
-  - name: Wishtleblower
-    description: Operations about wishtleblower service.
+  - name: Whistleblower
+    description: Operations about whistleblower service.
 paths:
   /news:
     get:
       tags:
         - News-Events
-      summary: To get access token for user's device
-      description: This can only be done by the any user.
+      summary: To get news from CMA
+      description: This can only be done by the access tokened user.
       operationId: sendNews
       parameters:
         - in: query
@@ -73,7 +73,7 @@ paths:
     get:
       tags:
         - News-Events
-      summary: To get access token for user's device
+      summary: To get events from CMA
       description: This can only be done by the any user.
       operationId: sendEvent
       parameters:
@@ -210,6 +210,18 @@ paths:
               schema:
                 type: integer
                 format: int32
+        "400":
+          description: Bad input - Validation failed
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "401":
           description: unauthorized - token expired
           content:
@@ -237,7 +249,7 @@ paths:
         - Insurance
       summary: Gives all insurance complaints. 
       responses:
-        "417":
+        "405":
           description: service not avialable
       security:
         - jwt: []
@@ -268,6 +280,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Insurance_Complaint"
+        "404":
+          description: ID not found
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "401":
           description: unauthorized - token expired
           content:
@@ -282,6 +306,64 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
       security:
         - jwt: []
+
+  /whistleblower/complaint:
+    post:
+      tags:
+        - Whistleblower
+      summary: Add user's whistleblower complaint
+      description: This can only be done by the logged in user.
+      operationId: createWishtleblowerComplaint
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Whistleblower_Complaint"
+        description: Created insurance complaint object
+        required: true
+      responses:
+        "201":
+          description: created successfully.
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+        "400":
+          description: Bad input - Validation failed
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: unauthorized - token expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+        "422":
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - jwt: []        
+        
+        
 externalDocs:
   description: Find out more about CMA
   url: https://www.cma.gov.om/
@@ -302,7 +384,7 @@ components:
         - user
       properties:
         insurance_company:
-          $ref: "#/components/schemas/Insurance_Company"
+          $ref: "#/components/schemas/Company"
         claim_number:
           type: string
         policy_number:
@@ -320,6 +402,7 @@ components:
         status:
           type: string
           enum:
+            - created
             - deleted
             - approved
             - rejected
@@ -335,6 +418,43 @@ components:
             description: File
         user:
           $ref: "#/components/schemas/User"
+    Whistleblower_Complaint:
+      type: object
+      required:
+        - contact
+        - details
+        - id
+        - id_type
+      properties:
+        contact:
+          $ref: "#/components/schemas/Contact"
+        id:
+          type: string
+        id_type:
+          type: string
+          enum:
+            - Id card
+            - Resident card
+            - Passport
+            - Driving License card
+            - Other
+        status:
+          type: string
+          enum:
+            - created
+            - deleted
+            - approved
+            - rejected
+            - incomplete
+            - processing
+        details:
+          $ref: "#/components/schemas/Detail"
+        documents:
+          type: array
+          items:
+            type: string
+            format: binary
+            description: File
     User:
       type: object
       required:
@@ -363,7 +483,7 @@ components:
         id_card_copy:
           type: string
           format: binary
-    Insurance_Company:
+    Company:
       type: object
       properties:
         company_name:
@@ -385,7 +505,25 @@ components:
             - iOS
         device_info:
           type: string
-          
+    Contact:
+      type: object
+      properties:
+        phone:
+          type: string
+          format: phone
+        email:
+          type: string
+          format: email
+        office_phone:
+          type: string
+          format: phone
+    Detail:
+      type: object
+      properties:
+        subject:
+          type: string
+        details:
+          type: string
     Token:
       type: object
       properties:
@@ -426,7 +564,7 @@ components:
         event_time:
           type: string
           format: date-time
-        
+  
     ErrorResponse:
       type: object
       properties:
