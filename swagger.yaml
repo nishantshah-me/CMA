@@ -35,6 +35,13 @@ paths:
       description: This can only be done by the access tokened user.
       operationId: sendFAQ
       parameters:
+        - in: header
+          name: lang
+          description: User's language
+          allowEmptyValue: false
+          schema:
+            type: string
+          required: true
         - in: query
           name: page
           description: Page number 
@@ -84,6 +91,13 @@ paths:
       description: This can only be done by the access tokened user.
       operationId: sendNews
       parameters:
+        - in: header
+          name: lang
+          description: User's language
+          allowEmptyValue: false
+          schema:
+            type: string
+          required: true
         - in: query
           name: page
           description: Page number 
@@ -131,6 +145,13 @@ paths:
       description: This can only be done by the any user.
       operationId: sendEvent
       parameters:
+        - in: header
+          name: lang
+          description: User's language
+          allowEmptyValue: false
+          schema:
+            type: string
+          required: true
         - in: query
           name: page
           description: Page number 
@@ -255,6 +276,14 @@ paths:
               $ref: "#/components/schemas/Insurance_Complaint"
         description: Created insurance complaint object
         required: true
+      parameters: 
+        - in: header
+          name: lang
+          description: User's language
+          allowEmptyValue: false
+          schema:
+            type: string
+          required: true
       responses:
         "201":
           description: created successfully.
@@ -316,6 +345,13 @@ paths:
       description: This can only be done by the tokened in user.
       operationId: statusInsuranceComplaint
       parameters:
+        - in: header
+          name: lang
+          description: User's language
+          allowEmptyValue: false
+          schema:
+            type: string
+          required: true
         - in: path
           name: complaint_id
           description: Created user object
@@ -376,6 +412,14 @@ paths:
               $ref: "#/components/schemas/Whistleblower_Complaint"
         description: Created insurance complaint object
         required: true
+      parameters: 
+        - in: header
+          name: lang
+          description: User's language
+          allowEmptyValue: false
+          schema:
+            type: string
+          required: true
       responses:
         "201":
           description: created successfully.
@@ -437,6 +481,13 @@ paths:
       description: This can only be done by the tokened in user.
       operationId: statusWhistleblowerComplaint
       parameters:
+        - in: header
+          name: lang
+          description: User's language
+          allowEmptyValue: false
+          schema:
+            type: string
+          required: true
         - in: path
           name: complaint_id
           description: Created user object
