@@ -1,11 +1,12 @@
 openapi: 3.0.0
 info:
-  description: This is rest api document for CMA project.
+  description: This is detailed rest api document for CMA mobile project. It must be followed by both (backend and frontend) developers to match the highest quality of the work.
+    Author - Nishant Shah
   version: 1.0.0
-  title: CMA api docs
-  termsOfService: http://swagger.io/terms/
+  title: CMA API specification 
   contact:
-    email: xxx@xxx.com
+    name: Saleh Alhashmi
+    email: saleh.alhashmi@cma.gov.om
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
@@ -21,6 +22,101 @@ tags:
   - name: Wishtleblower
     description: Operations about wishtleblower service.
 paths:
+  /news:
+    get:
+      tags:
+        - News-Events
+      summary: To get access token for user's device
+      description: This can only be done by the any user.
+      operationId: sendNews
+      parameters:
+        - in: query
+          name: page
+          description: Page number 
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: limit
+          description: items per page
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/News"
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+        "401":
+          description: unauthorized - token expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - jwt: []
+  /events:
+    get:
+      tags:
+        - News-Events
+      summary: To get access token for user's device
+      description: This can only be done by the any user.
+      operationId: sendEvent
+      parameters:
+        - in: query
+          name: page
+          description: Page number 
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: limit
+          description: items per page
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+        "401":
+          description: unauthorized - token expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - jwt: []
+        
   /access_token:
     get:
       tags:
@@ -297,7 +393,40 @@ components:
           type: string
         refresh_token:
           type: string
-   
+    News:
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+        image:
+          type: string
+          format: url
+        publish_date:
+          type: string
+          format: date-time
+    
+    Event:
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+        venue:
+          type: string
+          format: address
+        image:
+          type: string
+          format: url
+        event_date:
+          type: string
+          format: date
+        event_time:
+          type: string
+          format: date-time
+        
     ErrorResponse:
       type: object
       properties:
