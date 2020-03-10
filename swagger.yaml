@@ -10,64 +10,47 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
 tags:
-  - name: Push
-    description: Operations about push notification
+  - name: Device
+    description: Operations about device specific
   - name: Insurance
     description: Operations about insurance complaint
+  - name: News-Events
+    description: Operations about news and events 
+  - name: Hall
+    description: Operations about hall service.
+  - name: Wishtleblower
+    description: Operations about wishtleblower service.
 paths:
-  /otp:
+  /access_token:
     get:
       tags:
-        - Push
-      summary: To verify user's number
+        - Device
+      summary: To get access token for user's device
       description: This can only be done by the any user.
-      operationId: sendOtp
-      parameters:
-        - name: phone
-          in: query
-          description: The token for server to send the payload
-          required: true
-          schema:
-            type: string
+      operationId: sendToken
       responses:
         "200":
           description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Token"
           headers:
             X-Rate-Limit:
               description: calls per hour allowed by the user
               schema:
                 type: integer
                 format: int32
-        "400":
-          description: Bad input
-          headers:
-            X-Rate-Limit:
-              description: calls per hour allowed by the user
-              schema:
-                type: integer
-                format: int32
+        "422":
+          description: Too many request
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-        "401":
-          description: Bad input / wrong number
-          headers:
-            X-Rate-Limit:
-              description: calls per hour allowed by the user
-              schema:
-                type: integer
-                format: int32
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-      security:
-        - jwt: []
   /push:
     post:
       tags:
-        - Push
+        - Device
       summary: Add user's push token
       description: This can only be done by the logged in user.
       operationId: addPushToken
@@ -88,7 +71,7 @@ paths:
                 type: integer
                 format: int32
         "401":
-          description: unauthorized
+          description: unauthorized - token expired
           headers:
             X-Rate-Limit:
               description: calls per hour allowed by the user
@@ -99,39 +82,15 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-      security:
-        - jwt: []
-  /push/{push_token}:
-    delete:
-      tags:
-        - Push
-      summary: Logs user into the system
-      description: ""
-      operationId: deleteToken
-      parameters:
-        - name: push_token
-          in: path
-          description: The token for server to send the payload
-          required: true
-          schema:
-            type: string
-      responses:
-        "204":
-          description: Deleted successfully
-          headers:
-            X-Rate-Limit:
-              description: calls per hour allowed by the user
-              schema:
-                type: integer
-                format: int32
+        "422":
+          description: Too many request
           content:
             application/json:
               schema:
-                type: string
-        "404":
-          description: Token not found
+                $ref: "#/components/schemas/ErrorResponse"
       security:
         - jwt: []
+ 
   /insurance/complaint:
     post:
       tags:
@@ -148,7 +107,7 @@ paths:
         required: true
       responses:
         "201":
-          description: successful operation
+          description: created successfully.
           headers:
             X-Rate-Limit:
               description: calls per hour allowed by the user
@@ -156,7 +115,19 @@ paths:
                 type: integer
                 format: int32
         "401":
-          description: unauthorized
+          description: unauthorized - token expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+        "422":
+          description: Too many request
           content:
             application/json:
               schema:
@@ -202,7 +173,13 @@ paths:
               schema:
                 $ref: "#/components/schemas/Insurance_Complaint"
         "401":
-          description: unauthorized
+          description: unauthorized - token expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: Too many request
           content:
             application/json:
               schema:
@@ -311,6 +288,14 @@ components:
             - android
             - iOS
         device_info:
+          type: string
+          
+    Token:
+      type: object
+      properties:
+        access_token:
+          type: string
+        refresh_token:
           type: string
    
     ErrorResponse:
