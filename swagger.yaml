@@ -15,17 +15,71 @@ tags:
     description: Operations about device specific
   - name: Insurance
     description: Operations about insurance complaint
-  - name: News-Events
+  - name: News and Events
     description: Operations about news and events 
-  - name: Hall
+  - name: Hall 
     description: Operations about hall service.
   - name: Whistleblower
     description: Operations about whistleblower service.
+  - name: Board of director
+    description: Operation about board of director.
+  - name: Settings
+    description: settings. 
+    
 paths:
+  /faq:
+    get:
+      tags:
+        - Settings
+      summary: To get faq from CMA
+      description: This can only be done by the access tokened user.
+      operationId: sendFAQ
+      parameters:
+        - in: query
+          name: page
+          description: Page number 
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: limit
+          description: items per page
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/FAQ"
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+        "401":
+          description: unauthorized - token expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - jwt: []
   /news:
     get:
       tags:
-        - News-Events
+        - News and Events
       summary: To get news from CMA
       description: This can only be done by the access tokened user.
       operationId: sendNews
@@ -72,7 +126,7 @@ paths:
   /events:
     get:
       tags:
-        - News-Events
+        - News and Events
       summary: To get events from CMA
       description: This can only be done by the any user.
       operationId: sendEvent
@@ -143,7 +197,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-  /push:
+  /push_token:
     post:
       tags:
         - Device
@@ -253,6 +307,7 @@ paths:
           description: service not avialable
       security:
         - jwt: []
+        
   /insurance/complaint/{complaint_id}:
     get:
       tags:
@@ -361,8 +416,72 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
       security:
-        - jwt: []        
+        - jwt: []   
         
+  /whistleblower/complaint/:
+    get:
+      deprecated: true
+      tags:
+        - Whistleblower
+      summary: Gives all whistleblower complaints. 
+      responses:
+        "405":
+          description: service not avialable
+      security:
+        - jwt: []
+  /whistleblower/complaint/{complaint_id}:
+    get:
+      tags:
+        - Whistleblower
+      summary: See the status of whistleblower complaint.
+      description: This can only be done by the tokened in user.
+      operationId: statusWhistleblowerComplaint
+      parameters:
+        - in: path
+          name: complaint_id
+          description: Created user object
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Whistleblower_Complaint"
+        "404":
+          description: ID not found
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: unauthorized - token expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - jwt: [] 
         
 externalDocs:
   description: Find out more about CMA
@@ -544,7 +663,13 @@ components:
         publish_date:
           type: string
           format: date-time
-    
+    FAQ:
+      type: object
+      properties:
+        question:
+          type: string
+        answer:
+          type: string
     Event:
       type: object
       properties:
