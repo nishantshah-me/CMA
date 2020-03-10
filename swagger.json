@@ -1,1165 +1,757 @@
-{
-  "openapi": "3.0.0",
-  "info": {
-    "description": "This is detailed rest api document for CMA mobile project. It must be followed by both (backend and frontend) developers to match the highest quality of the work. Author - Nishant Shah",
-    "version": "1.0.0",
-    "title": "CMA API specification",
-    "contact": {
-      "name": "Saleh Alhashmi",
-      "email": "saleh.alhashmi@cma.gov.om"
-    },
-    "license": {
-      "name": "Apache 2.0",
-      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-    }
-  },
-  "tags": [
-    {
-      "name": "Device",
-      "description": "Operations about device specific"
-    },
-    {
-      "name": "Insurance",
-      "description": "Operations about insurance complaint"
-    },
-    {
-      "name": "News and Events",
-      "description": "Operations about news and events"
-    },
-    {
-      "name": "Hall",
-      "description": "Operations about hall service."
-    },
-    {
-      "name": "Whistleblower",
-      "description": "Operations about whistleblower service."
-    },
-    {
-      "name": "Board of director",
-      "description": "Operation about board of director."
-    },
-    {
-      "name": "Settings",
-      "description": "settings."
-    }
-  ],
-  "paths": {
-    "/faq": {
-      "get": {
-        "tags": [
-          "Settings"
-        ],
-        "summary": "To get faq from CMA",
-        "description": "This can only be done by the access tokened user.",
-        "operationId": "sendFAQ",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "lang",
-            "description": "User's language",
-            "allowEmptyValue": false,
-            "schema": {
-              "type": "string"
-            },
-            "required": true
-          },
-          {
-            "in": "query",
-            "name": "page",
-            "description": "Page number",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "in": "query",
-            "name": "limit",
-            "description": "items per page",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/FAQ"
-                  }
-                }
-              }
-            },
-            "headers": {
-              "X-Rate-Limit": {
-                "description": "calls per hour allowed by the user",
-                "schema": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "unauthorized - token expired",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Too many request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "jwt": []
-          }
-        ]
-      }
-    },
-    "/news": {
-      "get": {
-        "tags": [
-          "News and Events"
-        ],
-        "summary": "To get news from CMA",
-        "description": "This can only be done by the access tokened user.",
-        "operationId": "sendNews",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "lang",
-            "description": "User's language",
-            "allowEmptyValue": false,
-            "schema": {
-              "type": "string"
-            },
-            "required": true
-          },
-          {
-            "in": "query",
-            "name": "page",
-            "description": "Page number",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "in": "query",
-            "name": "limit",
-            "description": "items per page",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/News"
-                }
-              }
-            },
-            "headers": {
-              "X-Rate-Limit": {
-                "description": "calls per hour allowed by the user",
-                "schema": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "unauthorized - token expired",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Too many request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "jwt": []
-          }
-        ]
-      }
-    },
-    "/events": {
-      "get": {
-        "tags": [
-          "News and Events"
-        ],
-        "summary": "To get events from CMA",
-        "description": "This can only be done by the any user.",
-        "operationId": "sendEvent",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "lang",
-            "description": "User's language",
-            "allowEmptyValue": false,
-            "schema": {
-              "type": "string"
-            },
-            "required": true
-          },
-          {
-            "in": "query",
-            "name": "page",
-            "description": "Page number",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "in": "query",
-            "name": "limit",
-            "description": "items per page",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Event"
-                }
-              }
-            },
-            "headers": {
-              "X-Rate-Limit": {
-                "description": "calls per hour allowed by the user",
-                "schema": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "unauthorized - token expired",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Too many request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "jwt": []
-          }
-        ]
-      }
-    },
-    "/access_token": {
-      "get": {
-        "tags": [
-          "Device"
-        ],
-        "summary": "To get access token for user's device",
-        "description": "This can only be done by the any user.",
-        "operationId": "sendToken",
-        "responses": {
-          "200": {
-            "description": "successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Token"
-                }
-              }
-            },
-            "headers": {
-              "X-Rate-Limit": {
-                "description": "calls per hour allowed by the user",
-                "schema": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Too many request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/push_token": {
-      "post": {
-        "tags": [
-          "Device"
-        ],
-        "summary": "Add user's push token",
-        "description": "This can only be done by the logged in user.",
-        "operationId": "addPushToken",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PushNotification"
-              }
-            }
-          },
-          "description": "Created user object",
-          "required": true
-        },
-        "responses": {
-          "201": {
-            "description": "successful operation",
-            "headers": {
-              "X-Rate-Limit": {
-                "description": "calls per hour allowed by the user",
-                "schema": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "unauthorized - token expired",
-            "headers": {
-              "X-Rate-Limit": {
-                "description": "calls per hour allowed by the user",
-                "schema": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Too many request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "jwt": []
-          }
-        ]
-      }
-    },
-    "/insurance/complaint": {
-      "post": {
-        "tags": [
-          "Insurance"
-        ],
-        "summary": "Add user's insurance complaint",
-        "description": "This can only be done by the logged in user.",
-        "operationId": "createInsuranceComplaint",
-        "requestBody": {
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "$ref": "#/components/schemas/Insurance_Complaint"
-              }
-            }
-          },
-          "description": "Created insurance complaint object",
-          "required": true
-        },
-        "parameters": [
-          {
-            "in": "header",
-            "name": "lang",
-            "description": "User's language",
-            "allowEmptyValue": false,
-            "schema": {
-              "type": "string"
-            },
-            "required": true
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "created successfully.",
-            "headers": {
-              "X-Rate-Limit": {
-                "description": "calls per hour allowed by the user",
-                "schema": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad input - Validation failed",
-            "headers": {
-              "X-Rate-Limit": {
-                "description": "calls per hour allowed by the user",
-                "schema": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "unauthorized - token expired",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "headers": {
-              "X-Rate-Limit": {
-                "description": "calls per hour allowed by the user",
-                "schema": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Too many request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "jwt": []
-          }
-        ]
-      }
-    },
-    "/insurance/complaint/": {
-      "get": {
-        "deprecated": true,
-        "tags": [
-          "Insurance"
-        ],
-        "summary": "Gives all insurance complaints.",
-        "responses": {
-          "405": {
-            "description": "service not avialable"
-          }
-        },
-        "security": [
-          {
-            "jwt": []
-          }
-        ]
-      }
-    },
-    "/insurance/complaint/{complaint_id}": {
-      "get": {
-        "tags": [
-          "Insurance"
-        ],
-        "summary": "See the status of insurance complaint.",
-        "description": "This can only be done by the tokened in user.",
-        "operationId": "statusInsuranceComplaint",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "lang",
-            "description": "User's language",
-            "allowEmptyValue": false,
-            "schema": {
-              "type": "string"
-            },
-            "required": true
-          },
-          {
-            "in": "path",
-            "name": "complaint_id",
-            "description": "Created user object",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "successful operation",
-            "headers": {
-              "X-Rate-Limit": {
-                "description": "calls per hour allowed by the user",
-                "schema": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Insurance_Complaint"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "unauthorized - token expired",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "ID not found",
-            "headers": {
-              "X-Rate-Limit": {
-                "description": "calls per hour allowed by the user",
-                "schema": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Too many request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "jwt": []
-          }
-        ]
-      }
-    },
-    "/whistleblower/complaint": {
-      "post": {
-        "tags": [
-          "Whistleblower"
-        ],
-        "summary": "Add user's whistleblower complaint",
-        "description": "This can only be done by the logged in user.",
-        "operationId": "createWishtleblowerComplaint",
-        "requestBody": {
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "$ref": "#/components/schemas/Whistleblower_Complaint"
-              }
-            }
-          },
-          "description": "Created insurance complaint object",
-          "required": true
-        },
-        "parameters": [
-          {
-            "in": "header",
-            "name": "lang",
-            "description": "User's language",
-            "allowEmptyValue": false,
-            "schema": {
-              "type": "string"
-            },
-            "required": true
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "created successfully.",
-            "headers": {
-              "X-Rate-Limit": {
-                "description": "calls per hour allowed by the user",
-                "schema": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad input - Validation failed",
-            "headers": {
-              "X-Rate-Limit": {
-                "description": "calls per hour allowed by the user",
-                "schema": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "unauthorized - token expired",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "headers": {
-              "X-Rate-Limit": {
-                "description": "calls per hour allowed by the user",
-                "schema": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Too many request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "jwt": []
-          }
-        ]
-      }
-    },
-    "/whistleblower/complaint/": {
-      "get": {
-        "deprecated": true,
-        "tags": [
-          "Whistleblower"
-        ],
-        "summary": "Gives all whistleblower complaints.",
-        "responses": {
-          "405": {
-            "description": "service not avialable"
-          }
-        },
-        "security": [
-          {
-            "jwt": []
-          }
-        ]
-      }
-    },
-    "/whistleblower/complaint/{complaint_id}": {
-      "get": {
-        "tags": [
-          "Whistleblower"
-        ],
-        "summary": "See the status of whistleblower complaint.",
-        "description": "This can only be done by the tokened in user.",
-        "operationId": "statusWhistleblowerComplaint",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "lang",
-            "description": "User's language",
-            "allowEmptyValue": false,
-            "schema": {
-              "type": "string"
-            },
-            "required": true
-          },
-          {
-            "in": "path",
-            "name": "complaint_id",
-            "description": "Created user object",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "successful operation",
-            "headers": {
-              "X-Rate-Limit": {
-                "description": "calls per hour allowed by the user",
-                "schema": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Whistleblower_Complaint"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "unauthorized - token expired",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "ID not found",
-            "headers": {
-              "X-Rate-Limit": {
-                "description": "calls per hour allowed by the user",
-                "schema": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Too many request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "jwt": []
-          }
-        ]
-      }
-    }
-  },
-  "externalDocs": {
-    "description": "Find out more about CMA",
-    "url": "https://www.cma.gov.om/"
-  },
-  "servers": [
-    {
-      "url": "https://localhost/v1"
-    },
-    {
-      "url": "http://localhost/v1"
-    }
-  ],
-  "components": {
-    "securitySchemes": {
-      "jwt": {
-        "type": "apiKey",
-        "name": "jwt_token",
-        "in": "header"
-      }
-    },
-    "schemas": {
-      "Insurance_Complaint": {
-        "type": "object",
-        "required": [
-          "insurance_company",
-          "user"
-        ],
-        "properties": {
-          "insurance_company": {
-            "$ref": "#/components/schemas/Company"
-          },
-          "claim_number": {
-            "type": "string"
-          },
-          "policy_number": {
-            "type": "string"
-          },
-          "insurance_type": {
-            "type": "string",
-            "enum": [
-              "Car Insurance",
-              "Health Insurance",
-              "Life Insurance",
-              "Travel Insurance",
-              "Property Insurance"
-            ]
-          },
-          "insurance_complaint_type": {
-            "type": "string"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "created",
-              "deleted",
-              "approved",
-              "rejected",
-              "incomplete",
-              "processing"
-            ]
-          },
-          "details": {
-            "type": "string"
-          },
-          "documents": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "format": "binary",
-              "description": "File"
-            }
-          },
-          "user": {
-            "$ref": "#/components/schemas/User"
-          }
-        }
-      },
-      "Whistleblower_Complaint": {
-        "type": "object",
-        "required": [
-          "contact",
-          "details",
-          "id",
-          "id_type"
-        ],
-        "properties": {
-          "contact": {
-            "$ref": "#/components/schemas/Contact"
-          },
-          "id": {
-            "type": "string"
-          },
-          "id_type": {
-            "type": "string",
-            "enum": [
-              "Id card",
-              "Resident card",
-              "Passport",
-              "Driving License card",
-              "Other"
-            ]
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "created",
-              "deleted",
-              "approved",
-              "rejected",
-              "incomplete",
-              "processing"
-            ]
-          },
-          "details": {
-            "$ref": "#/components/schemas/Detail"
-          },
-          "documents": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "format": "binary",
-              "description": "File"
-            }
-          }
-        }
-      },
-      "User": {
-        "type": "object",
-        "required": [
-          "id",
-          "mobile",
-          "email",
-          "id_card_copy",
-          "nationality",
-          "name"
-        ],
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "picture": {
-            "type": "string",
-            "format": "binary"
-          },
-          "name": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string",
-            "format": "email"
-          },
-          "nationality": {
-            "type": "string"
-          },
-          "mobile": {
-            "type": "string",
-            "format": "phone"
-          },
-          "id_card_copy": {
-            "type": "string",
-            "format": "binary"
-          }
-        }
-      },
-      "Company": {
-        "type": "object",
-        "properties": {
-          "company_name": {
-            "type": "string"
-          },
-          "company_id": {
-            "type": "string"
-          }
-        }
-      },
-      "PushNotification": {
-        "type": "object",
-        "properties": {
-          "mobile": {
-            "type": "string",
-            "format": "phone"
-          },
-          "push_token": {
-            "type": "string"
-          },
-          "os": {
-            "type": "string",
-            "enum": [
-              "android",
-              "iOS"
-            ]
-          },
-          "device_info": {
-            "type": "string"
-          }
-        }
-      },
-      "Contact": {
-        "type": "object",
-        "properties": {
-          "phone": {
-            "type": "string",
-            "format": "phone"
-          },
-          "email": {
-            "type": "string",
-            "format": "email"
-          },
-          "office_phone": {
-            "type": "string",
-            "format": "phone"
-          }
-        }
-      },
-      "Detail": {
-        "type": "object",
-        "properties": {
-          "subject": {
-            "type": "string"
-          },
-          "details": {
-            "type": "string"
-          }
-        }
-      },
-      "Token": {
-        "type": "object",
-        "properties": {
-          "access_token": {
-            "type": "string"
-          },
-          "refresh_token": {
-            "type": "string"
-          }
-        }
-      },
-      "News": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string"
-          },
-          "content": {
-            "type": "string"
-          },
-          "image": {
-            "type": "string",
-            "format": "url"
-          },
-          "publish_date": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      },
-      "FAQ": {
-        "type": "object",
-        "properties": {
-          "question": {
-            "type": "string"
-          },
-          "answer": {
-            "type": "string"
-          }
-        }
-      },
-      "Event": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string"
-          },
-          "content": {
-            "type": "string"
-          },
-          "venue": {
-            "type": "string",
-            "format": "address"
-          },
-          "image": {
-            "type": "string",
-            "format": "url"
-          },
-          "event_date": {
-            "type": "string",
-            "format": "date"
-          },
-          "event_time": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      },
-      "ErrorResponse": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "exception": {
-            "type": "string"
-          },
-          "message": {
-            "type": "string"
-          },
-          "host": {
-            "type": "string"
-          },
-          "endpoint": {
-            "type": "string"
-          }
-        }
-      }
-    }
-  }
-}
+openapi: 3.0.0
+info:
+  description: This is detailed rest api document for CMA mobile project. It must be followed by both (backend and frontend) developers to match the highest quality of the work.
+    Author - Nishant Shah
+  version: 1.0.0
+  title: CMA API specification 
+  contact:
+    name: Saleh Alhashmi
+    email: saleh.alhashmi@cma.gov.om
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+tags:
+  - name: Device
+    description: Operations about device specific
+  - name: Insurance
+    description: Operations about insurance complaint
+  - name: News and Events
+    description: Operations about news and events 
+  - name: Hall 
+    description: Operations about hall service.
+  - name: Whistleblower
+    description: Operations about whistleblower service.
+  - name: Board of director
+    description: Operation about board of director.
+  - name: Settings
+    description: settings. 
+    
+paths:
+  /faq:
+    get:
+      tags:
+        - Settings
+      summary: To get faq from CMA
+      description: This can only be done by the access tokened user.
+      operationId: sendFAQ
+      parameters:
+        - in: header
+          name: lang
+          description: User's language
+          allowEmptyValue: false
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: page
+          description: Page number 
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: limit
+          description: items per page
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/FAQ"
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+        "401":
+          description: unauthorized - token expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - jwt: []
+  /news:
+    get:
+      tags:
+        - News and Events
+      summary: To get news from CMA
+      description: This can only be done by the access tokened user.
+      operationId: sendNews
+      parameters:
+        - in: header
+          name: lang
+          description: User's language
+          allowEmptyValue: false
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: page
+          description: Page number 
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: limit
+          description: items per page
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/News"
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+        "401":
+          description: unauthorized - token expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - jwt: []
+  /events:
+    get:
+      tags:
+        - News and Events
+      summary: To get events from CMA
+      description: This can only be done by the any user.
+      operationId: sendEvent
+      parameters:
+        - in: header
+          name: lang
+          description: User's language
+          allowEmptyValue: false
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: page
+          description: Page number 
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: limit
+          description: items per page
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+        "401":
+          description: unauthorized - token expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - jwt: []
+        
+  /access_token:
+    get:
+      tags:
+        - Device
+      summary: To get access token for user's device
+      description: This can only be done by the any user.
+      operationId: sendToken
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Token"
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+        "422":
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /push_token:
+    post:
+      tags:
+        - Device
+      summary: Add user's push token
+      description: This can only be done by the logged in user.
+      operationId: addPushToken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PushNotification"
+        description: Created user object
+        required: true
+      responses:
+        "201":
+          description: successful operation
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+        "401":
+          description: unauthorized - token expired
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - jwt: []
+ 
+  /insurance/complaint:
+    post:
+      tags:
+        - Insurance
+      summary: Add user's insurance complaint
+      description: This can only be done by the logged in user.
+      operationId: createInsuranceComplaint
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Insurance_Complaint"
+        description: Created insurance complaint object
+        required: true
+      parameters: 
+        - in: header
+          name: lang
+          description: User's language
+          allowEmptyValue: false
+          schema:
+            type: string
+          required: true
+      responses:
+        "201":
+          description: created successfully.
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+        "400":
+          description: Bad input - Validation failed
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: unauthorized - token expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+        "422":
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - jwt: []
+  /insurance/complaint/:
+    get:
+      deprecated: true
+      tags:
+        - Insurance
+      summary: Gives all insurance complaints. 
+      responses:
+        "405":
+          description: service not avialable
+      security:
+        - jwt: []
+        
+  /insurance/complaint/{complaint_id}:
+    get:
+      tags:
+        - Insurance
+      summary: See the status of insurance complaint.
+      description: This can only be done by the tokened in user.
+      operationId: statusInsuranceComplaint
+      parameters:
+        - in: header
+          name: lang
+          description: User's language
+          allowEmptyValue: false
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: complaint_id
+          description: Created user object
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Insurance_Complaint"
+        "404":
+          description: ID not found
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: unauthorized - token expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - jwt: []
+
+  /whistleblower/complaint:
+    post:
+      tags:
+        - Whistleblower
+      summary: Add user's whistleblower complaint
+      description: This can only be done by the logged in user.
+      operationId: createWishtleblowerComplaint
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Whistleblower_Complaint"
+        description: Created insurance complaint object
+        required: true
+      parameters: 
+        - in: header
+          name: lang
+          description: User's language
+          allowEmptyValue: false
+          schema:
+            type: string
+          required: true
+      responses:
+        "201":
+          description: created successfully.
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+        "400":
+          description: Bad input - Validation failed
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: unauthorized - token expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+        "422":
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - jwt: []   
+        
+  /whistleblower/complaint/:
+    get:
+      deprecated: true
+      tags:
+        - Whistleblower
+      summary: Gives all whistleblower complaints. 
+      responses:
+        "405":
+          description: service not avialable
+      security:
+        - jwt: []
+  /whistleblower/complaint/{complaint_id}:
+    get:
+      tags:
+        - Whistleblower
+      summary: See the status of whistleblower complaint.
+      description: This can only be done by the tokened in user.
+      operationId: statusWhistleblowerComplaint
+      parameters:
+        - in: header
+          name: lang
+          description: User's language
+          allowEmptyValue: false
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: complaint_id
+          description: Created user object
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Whistleblower_Complaint"
+        "404":
+          description: ID not found
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: unauthorized - token expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - jwt: [] 
+        
+externalDocs:
+  description: Find out more about CMA
+  url: https://www.cma.gov.om/
+servers:
+  - url: https://localhost/v1
+  - url: http://localhost/v1
+components:
+  securitySchemes:
+    jwt:
+      type: apiKey
+      name: jwt_token
+      in: header
+  schemas:
+    Insurance_Complaint:
+      type: object
+      required:
+        - insurance_company
+        - user
+      properties:
+        insurance_company:
+          $ref: "#/components/schemas/Company"
+        claim_number:
+          type: string
+        policy_number:
+          type: string
+        insurance_type:
+          type: string
+          enum:
+            - Car Insurance
+            - Health Insurance
+            - Life Insurance
+            - Travel Insurance
+            - Property Insurance
+        insurance_complaint_type:
+          type: string
+        status:
+          type: string
+          enum:
+            - created
+            - deleted
+            - approved
+            - rejected
+            - incomplete
+            - processing
+        details:
+          type: string
+        documents:
+          type: array
+          items:
+            type: string
+            format: binary
+            description: File
+        user:
+          $ref: "#/components/schemas/User"
+    Whistleblower_Complaint:
+      type: object
+      required:
+        - contact
+        - details
+        - id
+        - id_type
+      properties:
+        contact:
+          $ref: "#/components/schemas/Contact"
+        id:
+          type: string
+        id_type:
+          type: string
+          enum:
+            - Id card
+            - Resident card
+            - Passport
+            - Driving License card
+            - Other
+        status:
+          type: string
+          enum:
+            - created
+            - deleted
+            - approved
+            - rejected
+            - incomplete
+            - processing
+        details:
+          $ref: "#/components/schemas/Detail"
+        documents:
+          type: array
+          items:
+            type: string
+            format: binary
+            description: File
+    User:
+      type: object
+      required:
+        - id
+        - mobile
+        - email
+        - id_card_copy
+        - nationality
+        - name
+      properties:
+        id:
+          type: string
+        picture:
+          type: string
+          format: binary
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        nationality:
+          type: string
+        mobile:
+          type: string
+          format: phone
+        id_card_copy:
+          type: string
+          format: binary
+    Company:
+      type: object
+      properties:
+        company_name:
+          type: string
+        company_id:
+          type: string
+    PushNotification:
+      type: object
+      properties:
+        mobile:
+          type: string
+          format: phone
+        push_token:
+          type: string
+        os:
+          type: string
+          enum:
+            - android
+            - iOS
+        device_info:
+          type: string
+    Contact:
+      type: object
+      properties:
+        phone:
+          type: string
+          format: phone
+        email:
+          type: string
+          format: email
+        office_phone:
+          type: string
+          format: phone
+    Detail:
+      type: object
+      properties:
+        subject:
+          type: string
+        details:
+          type: string
+    Token:
+      type: object
+      properties:
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+    News:
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+        image:
+          type: string
+          format: url
+        publish_date:
+          type: string
+          format: date-time
+    FAQ:
+      type: object
+      properties:
+        question:
+          type: string
+        answer:
+          type: string
+    Event:
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+        venue:
+          type: string
+          format: address
+        image:
+          type: string
+          format: url
+        event_date:
+          type: string
+          format: date
+        event_time:
+          type: string
+          format: date-time
+  
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        exception:
+          type: string
+        message:
+          type: string
+        host:
+          type: string
+        endpoint:
+          type: string
