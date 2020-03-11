@@ -10,6 +10,13 @@ info:
   license:
     name: license - private
     url: http://www.apache.org/licenses/LICENSE-2.0.html
+externalDocs:
+  description: Find out more about CMA
+  url: https://www.cma.gov.om/
+servers:
+  - url: https://cma.gov.om/api/v1
+  - url: https://localhost/v1
+  - url: http://localhost/v1
 tags:
   - name: Device
     description: Operations about device specific
@@ -131,7 +138,81 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
       security:
         - access_token: []
-  
+  /hall/{id}/booking/availability:
+   get:
+      tags:
+        - Hall
+      summary: To get hall's booking availability for selected date-time
+      description: This can only be used by the user with access token.
+      operationId: getHallBookingAvailabilityById
+      parameters:
+        - in: path
+          name: id
+          description: Hall's ID
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: lang
+          description: User's language
+          allowEmptyValue: false
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: date_from
+          allowEmptyValue: true
+          schema:
+            type: string
+          required: false
+        - in: query
+          name: date_to
+          allowEmptyValue: true
+          schema:
+            type: string
+          required: false
+        - in: query
+          name: time_to
+          allowEmptyValue: true
+          schema:
+            type: string
+          required: false
+        - in: query
+          name: time_from
+          allowEmptyValue: true
+          schema:
+            type: string
+          required: false
+        
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/HallBookingAvailability"
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+        "401":
+          description: unauthorized - token expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - access_token: []
   /hall/{id}/booking:
     get:
       tags:
@@ -180,7 +261,9 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: "#/components/schemas/Hall"
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/HallBookingInfo"
           headers:
             X-Rate-Limit:
               description: calls per hour allowed by the user
@@ -207,6 +290,13 @@ paths:
       summary: To book the hall at CMA.
       description: This can only be used by the user with access token.
       operationId: sendHallBookingInfoById
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/HallBookingInfo"
+        description: Created insurance complaint object
+        required: true
       parameters:
         - in: path
           name: id
@@ -227,7 +317,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: "#/components/schemas/Hall"
+                  $ref: "#/components/schemas/HallBookingInfo"
           headers:
             X-Rate-Limit:
               description: calls per hour allowed by the user
@@ -276,6 +366,12 @@ paths:
           required: true
           schema:
             type: integer
+        - in: query
+          name: type_id
+          description: FAQ type id
+          required: false
+          schema:
+            type: string
       responses:
         "200":
           description: successful operation
@@ -764,13 +860,7 @@ paths:
       security:
         - access_token: [] 
         
-externalDocs:
-  description: Find out more about CMA
-  url: https://www.cma.gov.om/
-servers:
-  - url: https://cma.gov.om/api/v1
-  - url: https://localhost/v1
-  - url: http://localhost/v1
+
 components:
   securitySchemes:
     access_token:
@@ -780,6 +870,7 @@ components:
         , example `fd4698c940c6d1da602a70ac34f0b147`.
       name: access_token
       in: header
+  
   schemas:
     Insurance_Complaint:
       type: object
@@ -807,9 +898,11 @@ components:
           type: string
           enum:
             - created
+            - applied
             - deleted
             - approved
             - rejected
+            - failed
             - incomplete
             - processing
         details:
@@ -846,9 +939,11 @@ components:
           type: string
           enum:
             - created
+            - applied
             - deleted
             - approved
             - rejected
+            - failed
             - incomplete
             - processing
         details:
@@ -884,6 +979,8 @@ components:
         mobile:
           type: string
           format: phone
+          example: +968 12345678
+          pattern: '\+[0-9 ]+'
         id_card_copy:
           type: string
           format: binary
@@ -917,7 +1014,7 @@ components:
         phone:
           type: string
           format: phone
-          example: +968 98765432
+          example: +968 12345678
           pattern: '\+[0-9 ]+'
         email:
           type: string
@@ -958,6 +1055,8 @@ components:
     FAQ:
       type: object
       properties:
+        section:
+          type: string
         question:
           type: string
         answer:
@@ -1004,15 +1103,31 @@ components:
     HallBookingRequest:
       type: object
       required:
-        - start_time
-        - end_time
+        - date_from
+        - date_to
         - time_from
         - time_to
+        - description
+        - applicant_name
+        - event_name
+        - booking_reason
+        - job_title
+        - email
+        - phone
+        - organization
       properties:
-        start_tme:
+        description:
+          type: string
+        date_from:
+          type: string
+          format: date
+        date_to:
+          type: string
+          format: date
+        time_from:
           type: string
           format: date-time
-        end_time:
+        time_to:
           type: string
           format: date-time
         is_external_entity:
@@ -1021,12 +1136,11 @@ components:
           type: string
         booking_reason:
           type: string
-        Applicant:
-          $ref: '#/components/schemas/HallApplicantInfo'
-    HallApplicantInfo:
-      type: object
-      properties:
-        name:
+        username:
+          type: string
+        price:
+          type: string
+        applicant_name:
           type: string
         job_title:
           type: string
@@ -1037,11 +1151,32 @@ components:
           type: string
         organization:
           type: string
+        status:
+          type: string
+          enum:
+            - created
+            - applied
+            - deleted
+            - approved
+            - rejected
+            - failed
+            - incomplete
+            - processing 
+    
     HallBookingInfo:
-        type: object
-        properties:
-          name:
-            type: string
+      allOf:
+      $ref: '#/components/schemas/HallBookingRequest'
+      additionalProperties:
+        id:
+          type: string
+    
+    HallBookingAvailability:
+      type: object
+      properties:
+        is_available:
+          type: boolean
+        price:
+          type: string
     SuccessResponse:
       type: object
       properties:
@@ -1050,6 +1185,11 @@ components:
           format: int32
         message:
           type: string
+        redirect:
+          type: boolean
+        redirect_url:
+          type: string
+          format: url
     ErrorResponse:
       type: object
       properties:
