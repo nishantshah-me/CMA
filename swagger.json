@@ -1866,6 +1866,9 @@
             "type": "string",
             "format": "binary"
           },
+          "username": {
+            "type": "string"
+          },
           "email": {
             "type": "string",
             "format": "email"
