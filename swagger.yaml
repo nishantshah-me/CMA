@@ -8,7 +8,7 @@ info:
     name: SPOC
     email: saleh.alhashmi@cma.gov.om
   license:
-    name: license - private
+    name: License - private only
     url: http://www.apache.org/licenses/LICENSE-2.0.html
 externalDocs:
   description: Find out more about CMA
@@ -926,6 +926,69 @@ paths:
       security:
         - access_token: [] 
         
+  /boardOfDirectors:
+    post:
+      tags:
+        - Board of director
+      summary: For board of director's registration.
+      description: This can only be done by the logged in user.
+      operationId: createBoardOfDirectorReqeust
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BoardOfDirectorInfo'
+        description: Created insurance complaint object
+        required: true
+      parameters: 
+        - in: header
+          name: lang
+          description: User's language
+          allowEmptyValue: false
+          schema:
+            type: string
+          required: true
+      responses:
+        "201":
+          description: created successfully.
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+        "400":
+          description: Bad input - Validation failed
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: unauthorized - token expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+        "422":
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - access_token: []   
 
 components:
   securitySchemes:
@@ -1068,10 +1131,8 @@ components:
       type: object
       required:
         - push_token
+        - os
       properties:
-        mobile:
-          type: string
-          format: phone
         push_token:
           type: string
         os:
@@ -1079,10 +1140,92 @@ components:
           enum:
             - android
             - iOS
-        device_info:
+    BoardOfDirectorInfo:
+      type: object
+      required: 
+        - id_type
+        - id_number
+      properties:
+        picture:
           type: string
+          format: binary
+        id_type:
+          type: string
+          enum:
+            - Id card
+            - Resident card
+            - Passport
+            - Driving License card
+            - Other
+        id_number:
+          type: string
+        full_name:
+          type: string
+        gender:
+          type: string
+          enum:
+            - Male
+            - Female
+        nationality:
+          type: string
+        country:
+          type: string
+        date_of_birth:
+          type: string
+          format: date
+        phone:
+          type: string
+          format: phone
+        member_job_status:
+          type: string
+          enum:
+            - On job
+            - Business owner
+            - Retired
+        highest_academic_qualification:
+          type: string
+          enum:
+            - No qualification
+            - Elementary
+            - Preparatory
+            - Professional Certificate
+            - General Diploma(Secondary)
+            - Diploma
+            - Bachelor
+            - Master
+            - Doctorate
+        main_major:
+          type: array
+          items:
+            type: string
+            enum:
+              - Accounting
+              - Business Contacts
+              - Economy
+              - Finance
+              - Graphic Design
+              - International Business Administration
+              - International Relations
+              - Law
+              - Marketing
+              - others
+              - Political Science
+              - Statistics
+        professional_cert:
+          type: string
+        passport:
+          type: string
+          format: binary
+        cv:
+          type: string
+          format: binary
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
     
-   
     Token:
       type: object
       properties:
