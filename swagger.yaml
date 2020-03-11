@@ -18,8 +18,8 @@ servers:
   - url: https://localhost/v1
   - url: http://localhost/v1
 tags:
-  - name: Device
-    description: Operations about device specific
+  - name: User
+    description: Operations about user 
   - name: Insurance
     description: Operations about insurance complaint
   - name: News and Events
@@ -576,10 +576,10 @@ paths:
       security:
         - access_token: []
         
-  /access_token:
+  /user/access_token:
     get:
       tags:
-        - Device
+        - User
       summary: To get access token for user's device
       description: This can only be done by the any user.
       operationId: sendToken
@@ -610,10 +610,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-  /push_token:
+  /user/push_token:
     post:
       tags:
-        - Device
+        - User
       summary: Add user's push token
       description: This can only be done by the logged in user.
       operationId: addPushToken
@@ -665,7 +665,7 @@ paths:
         content:
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/Insurance_Complaint"
+              $ref: "#/components/schemas/InsuranceComplaintRequest"
         description: Created insurance complaint object
         required: true
       parameters: 
@@ -762,7 +762,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Insurance_Complaint"
+                $ref: '#/components/schemas/InsuranceComplaintInfo'
         "404":
           description: ID not found
           headers:
@@ -801,7 +801,7 @@ paths:
         content:
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/Whistleblower_Complaint"
+              $ref: '#/components/schemas/WhistleblowerComplaintRequest'
         description: Created insurance complaint object
         required: true
       parameters: 
@@ -898,7 +898,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Whistleblower_Complaint"
+                $ref: '#/components/schemas/WhistleblowerComplaintInfo'
         "404":
           description: ID not found
           headers:
@@ -938,14 +938,14 @@ components:
       in: header
   
   schemas:
-    Insurance_Complaint:
+    InsuranceComplaintRequest:
       type: object
       required:
         - insurance_company
         - user
       properties:
-        insurance_company:
-          $ref: "#/components/schemas/Company"
+        insurance_company_name:
+          type: string
         claim_number:
           type: string
         policy_number:
@@ -960,17 +960,6 @@ components:
             - Property Insurance
         insurance_complaint_type:
           type: string
-        status:
-          type: string
-          enum:
-            - created
-            - applied
-            - deleted
-            - approved
-            - rejected
-            - failed
-            - incomplete
-            - processing
         details:
           type: string
         documents:
@@ -979,59 +968,6 @@ components:
             type: string
             format: binary
             description: File
-        user:
-          $ref: "#/components/schemas/User"
-    Whistleblower_Complaint:
-      type: object
-      required:
-        - contact
-        - details
-        - id
-        - id_type
-      properties:
-        contact:
-          $ref: "#/components/schemas/Contact"
-        id:
-          type: string
-        id_type:
-          type: string
-          enum:
-            - Id card
-            - Resident card
-            - Passport
-            - Driving License card
-            - Other
-        status:
-          type: string
-          enum:
-            - created
-            - applied
-            - deleted
-            - approved
-            - rejected
-            - failed
-            - incomplete
-            - processing
-        details:
-          $ref: "#/components/schemas/Detail"
-        documents:
-          type: array
-          items:
-            type: string
-            format: binary
-            description: File
-    User:
-      type: object
-      required:
-        - id
-        - mobile
-        - email
-        - id_card_copy
-        - nationality
-        - name
-      properties:
-        id:
-          type: string
         picture:
           type: string
           format: binary
@@ -1050,13 +986,84 @@ components:
         id_card_copy:
           type: string
           format: binary
-    Company:
+          
+    InsuranceComplaintInfo:
+       allOf:
+        - $ref: '#/components/schemas/InsuranceComplaintRequest'
+        - type: object
+          properties:
+            status:
+              type: string
+              enum:
+                - created
+                - applied
+                - deleted
+                - approved
+                - rejected
+                - failed
+                - incomplete
+                - processing
+            complaint_id:
+              type: string
+            
+    WhistleblowerComplaintRequest:
       type: object
+      required:
+        - contact
+        - details
+        - id
+        - id_type
+        - subject
       properties:
-        company_name:
+        phone:
           type: string
-        company_id:
+          format: phone
+          example: +968 12345678
+          pattern: '\+[0-9 ]+'
+        email:
           type: string
+          format: email
+        office_phone:
+          type: string
+          format: phone
+        id:
+          type: string
+        id_type:
+          type: string
+          enum:
+            - Id card
+            - Resident card
+            - Passport
+            - Driving License card
+            - Other
+        documents:
+          type: array
+          items:
+            type: string
+            format: binary
+            description: File
+        subject:
+          type: string
+        details:
+          type: string
+    WhistleblowerComplaintInfo:
+       allOf:
+        - $ref: '#/components/schemas/WhistleblowerComplaintRequest'
+        - type: object
+          properties:
+            status:
+              type: string
+              enum:
+                - created
+                - applied
+                - deleted
+                - approved
+                - rejected
+                - failed
+                - incomplete
+                - processing
+            complaint_id:
+              type: string
     PushNotification:
       type: object
       required:
@@ -1074,27 +1081,8 @@ components:
             - iOS
         device_info:
           type: string
-    Contact:
-      type: object
-      properties:
-        phone:
-          type: string
-          format: phone
-          example: +968 12345678
-          pattern: '\+[0-9 ]+'
-        email:
-          type: string
-          format: email
-        office_phone:
-          type: string
-          format: phone
-    Detail:
-      type: object
-      properties:
-        subject:
-          type: string
-        details:
-          type: string
+    
+   
     Token:
       type: object
       properties:
