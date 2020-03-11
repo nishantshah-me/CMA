@@ -294,7 +294,7 @@ paths:
         content:
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/HallBookingInfo"
+              $ref: "#/components/schemas/HallBookingRequest"
         description: Created insurance complaint object
         required: true
       parameters:
@@ -381,6 +381,72 @@ paths:
                 type: "array"
                 items:
                   $ref: "#/components/schemas/FAQ"
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+        "401":
+          description: unauthorized - token expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - access_token: []
+  /contact:
+    post:
+      tags:
+        - Settings
+      summary: To contact CMA
+      description: This can only be done by the access tokened user.
+      operationId: sendFeedback
+      requestBody:
+        content:
+         application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: 
+                - name
+                - email
+                - phone
+                - details
+              properties:
+                name:          
+                  type: string
+                email:
+                  type: string
+                  format: email
+                phone:
+                  type: string
+                  format: phone
+                details:
+                  type: string
+      parameters:
+        - in: header
+          name: lang
+          description: User's language
+          allowEmptyValue: false
+          schema:
+            type: string
+          required: true
+        
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/SuccessResponse"
           headers:
             X-Rate-Limit:
               description: calls per hour allowed by the user
@@ -1151,7 +1217,14 @@ components:
           type: string
         organization:
           type: string
-        status:
+    HallBookingInfo:
+      allOf:
+      - $ref: '#/components/schemas/HallBookingRequest'
+      - type: object
+        properties:
+         booking_id:
+          type: string
+         status:
           type: string
           enum:
             - created
@@ -1162,13 +1235,13 @@ components:
             - failed
             - incomplete
             - processing 
-    
-    HallBookingInfo:
-      allOf:
-      $ref: '#/components/schemas/HallBookingRequest'
-      additionalProperties:
-        id:
+            - payment_pending
+            - payment_successful
+            - payment_failed
+         payment_url:
           type: string
+          format: url
+          description: Link to payment gateway.
     
     HallBookingAvailability:
       type: object
