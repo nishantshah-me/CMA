@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   description: This is detailed rest api document for CMA mobile project. It must be followed by both (backend and frontend) developers to match the highest quality of the work.
     Author - Nishant Shah
-  version: 1.0.0
+  version: 2.0.0
   title: CMA API specification 
   contact:
     name: SPOC
