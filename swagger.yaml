@@ -24,8 +24,8 @@ tags:
     description: Operations about insurance complaint
   - name: News and Events
     description: Operations about news and events 
-  - name: Hall 
-    description: Operations about hall service.
+  - name: Injury 
+    description: Operations about injury fund.
   - name: Whistleblower
     description: Operations about whistleblower service.
   - name: Board of director
@@ -34,276 +34,20 @@ tags:
     description: settings. 
     
 paths:
-  /hall:
-    get:
-      tags:
-        - Hall
-      summary: To get all halls of CMA
-      description: This can only for user with token.
-      operationId: getHallList
-      parameters:
-        - in: header
-          name: lang
-          description: User's language
-          allowEmptyValue: false
-          schema:
-            type: string
-          required: true
-        - in: query
-          name: page
-          description: Page number 
-          required: false
-          schema:
-            type: integer
-        - in: query
-          name: limit
-          description: items per page
-          required: false
-          schema:
-            type: integer
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: "array"
-                items:
-                  $ref: "#/components/schemas/Hall"
-          headers:
-            X-Rate-Limit:
-              description: calls per hour allowed by the user
-              schema:
-                type: integer
-                format: int32
-        "401":
-          description: unauthorized - token expired
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "422":
-          description: Too many request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-      security:
-        - access_token: []
-  /hall/{id}:
-    get:
-      tags:
-        - Hall
-      summary: To get hall by ID of CMA
-      description: This can only be used by the user with access token.
-      operationId: getHallInfo
-      parameters:
-        - in: path
-          name: id
-          description: Hall's ID
-          required: true
-          schema:
-            type: string
-        - in: header
-          name: lang
-          description: User's language
-          allowEmptyValue: false
-          schema:
-            type: string
-          required: true
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                  $ref: "#/components/schemas/Hall"
-          headers:
-            X-Rate-Limit:
-              description: calls per hour allowed by the user
-              schema:
-                type: integer
-                format: int32
-        "401":
-          description: unauthorized - token expired
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "422":
-          description: Too many request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-      security:
-        - access_token: []
-  /hall/{id}/booking/availability:
-   get:
-      tags:
-        - Hall
-      summary: To get hall's booking availability for selected date-time
-      description: This can only be used by the user with access token.
-      operationId: getHallBookingAvailabilityById
-      parameters:
-        - in: path
-          name: id
-          description: Hall's ID
-          required: true
-          schema:
-            type: string
-        - in: header
-          name: lang
-          description: User's language
-          allowEmptyValue: false
-          schema:
-            type: string
-          required: true
-        - in: query
-          name: date_from
-          allowEmptyValue: true
-          schema:
-            type: string
-          required: false
-        - in: query
-          name: date_to
-          allowEmptyValue: true
-          schema:
-            type: string
-          required: false
-        - in: query
-          name: time_to
-          allowEmptyValue: true
-          schema:
-            type: string
-          required: false
-        - in: query
-          name: time_from
-          allowEmptyValue: true
-          schema:
-            type: string
-          required: false
-        
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                  type: array
-                  items:
-                    $ref: "#/components/schemas/HallBookingAvailability"
-          headers:
-            X-Rate-Limit:
-              description: calls per hour allowed by the user
-              schema:
-                type: integer
-                format: int32
-        "401":
-          description: unauthorized - token expired
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "422":
-          description: Too many request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-      security:
-        - access_token: []
-  /hall/{id}/booking:
-    get:
-      tags:
-        - Hall
-      summary: To get hall's booking info. by ID
-      description: This can only be used by the user with access token.
-      operationId: getHallBookingInfoById
-      parameters:
-        - in: path
-          name: id
-          description: Hall's ID
-          required: true
-          schema:
-            type: string
-        - in: header
-          name: lang
-          description: User's language
-          allowEmptyValue: false
-          schema:
-            type: string
-          required: true
-        - in: query
-          name: year
-          description: filter by year - Default is current year
-          allowEmptyValue: true
-          schema:
-            type: string
-          required: false
-        - in: query
-          name: month
-          description: filter by month, e.g. for 13th March,2020 - send 03
-          allowEmptyValue: false
-          schema:
-            type: string
-          required: true
-        - in: query
-          name: date
-          description: filter by date, e.g. for 13th March,2020 - send 13
-          allowEmptyValue: false
-          schema:
-            type: string
-          required: true
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                  type: array
-                  items:
-                    $ref: "#/components/schemas/HallBookingInfo"
-          headers:
-            X-Rate-Limit:
-              description: calls per hour allowed by the user
-              schema:
-                type: integer
-                format: int32
-        "401":
-          description: unauthorized - token expired
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "422":
-          description: Too many request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-      security:
-        - access_token: []
+  /injury:
     post:
       tags:
-        - Hall
-      summary: To book the hall at CMA.
-      description: This can only be used by the user with access token.
-      operationId: sendHallBookingInfoById
+        - Injury
+      summary: Injury help
+      description: This can only be done by the logged in user.
+      operationId: createInjuryFundRequest
       requestBody:
         content:
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/HallBookingRequest"
-        description: Created insurance complaint object
+              $ref: '#/components/schemas/InjurtRequest'
         required: true
-      parameters:
-        - in: path
-          name: id
-          description: Hall's ID
-          required: true
-          schema:
-            type: string
+      parameters: 
         - in: header
           name: lang
           description: User's language
@@ -312,24 +56,38 @@ paths:
             type: string
           required: true
       responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                  $ref: "#/components/schemas/HallBookingInfo"
+        "201":
+          description: created successfully.
           headers:
             X-Rate-Limit:
               description: calls per hour allowed by the user
               schema:
                 type: integer
                 format: int32
+        "400":
+          description: Bad input - Validation failed
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "401":
           description: unauthorized - token expired
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
         "422":
           description: Too many request
           content:
@@ -337,7 +95,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
       security:
-        - access_token: []
+        - access_token: []  
         
   /faq:
     get:
@@ -1068,7 +826,119 @@ components:
                 - processing
             complaint_id:
               type: string
-            
+   
+    InjurtRequest:
+      type: object
+      required:
+        - contact
+        - details
+        - id
+        - id_type
+        - subject
+      properties:
+        applicant_name:
+          type: string
+        description_of_applicant:
+          type: string
+          enum:
+              - Self
+              - Under-Heirs
+              - Other
+        other_characteristic:
+          type: string
+        id:
+          type: string
+        id_type:
+          type: string
+          enum:
+            - Id card
+            - Resident card
+            - Passport
+            - Driving License card
+            - Other
+        phone:
+          type: string
+          format: phone
+          example: +968 12345678
+          pattern: '\+[0-9 ]+'
+        email:
+          type: string
+          format: email
+        alternative_phone:
+          type: string
+          format: phone
+        accident_date:
+          type: string
+          format: date
+        accident_type:
+          type: string
+          enum:
+            - Simple
+            - Terrible
+        damage_type:
+          type: string
+          enum:
+            - Material
+            - Bodily
+            - Both
+        vehicle_condition:
+          type: string
+        situation_description:
+          type: string
+        demands:
+          type: string
+        approx_damage_cost:
+          type: string
+        accident_report_of_ROP:
+          type: string
+          format: binary
+        legal_agency:
+          type: string
+          format: binary
+        techincal_report_issued_by_rop:
+          type: string
+          format: binary
+        offender_vehicle_ownership:
+          type: string
+          format: binary
+        victim_vehicle_ownership:
+          type: string
+          format: binary
+        parties:
+            type: array
+            items:
+              $ref: '#/components/schemas/InjuryParites'
+    
+    InjuryParites:
+      type: object
+      additionalProperties: true
+      required:
+         - name
+         - identity_number
+         - situation_type
+      properties:
+        name:
+          type: string
+        identity_number:
+          type: string
+        situation_type:
+          type: string
+          enum:
+            - Injury
+            - Inability
+            - Dealth
+        Id_card:
+          type: string
+          format: binary
+        treatment_bill:
+          type: string
+          format: binary
+        medical_report:
+          type: string
+          format: binary
+          
+          
+          
     WhistleblowerComplaintRequest:
       type: object
       required:
@@ -1281,108 +1151,7 @@ components:
         event_time:
           type: string
           format: date-time
-    Hall:
-      type: object
-      properties:
-        id:
-          type: string
-        title:
-          type: string
-        capacity:
-          type: string
-        price:
-          type: string
-        features:
-          type: string
-        images:
-          type: array
-          items:
-            type: string
-            format: url
-    HallBookingRequest:
-      type: object
-      required:
-        - date_from
-        - date_to
-        - time_from
-        - time_to
-        - description
-        - applicant_name
-        - event_name
-        - booking_reason
-        - job_title
-        - email
-        - phone
-        - organization
-      properties:
-        description:
-          type: string
-        date_from:
-          type: string
-          format: date
-        date_to:
-          type: string
-          format: date
-        time_from:
-          type: string
-          format: date-time
-        time_to:
-          type: string
-          format: date-time
-        is_external_entity:
-          type: boolean
-        event_name:
-          type: string
-        booking_reason:
-          type: string
-        username:
-          type: string
-        price:
-          type: string
-        applicant_name:
-          type: string
-        job_title:
-          type: string
-        email:
-          type: string
-          format: email
-        phone:
-          type: string
-        organization:
-          type: string
-    HallBookingInfo:
-      allOf:
-      - $ref: '#/components/schemas/HallBookingRequest'
-      - type: object
-        properties:
-         booking_id:
-          type: string
-         status:
-          type: string
-          enum:
-            - created
-            - applied
-            - deleted
-            - approved
-            - rejected
-            - failed
-            - incomplete
-            - processing 
-            - payment_pending
-            - payment_successful
-            - payment_failed
-         payment_url:
-          type: string
-          format: url
-          description: Link to payment gateway.
     
-    HallBookingAvailability:
-      type: object
-      properties:
-        is_available:
-          type: boolean
-        price:
-          type: string
     SuccessResponse:
       type: object
       properties:
